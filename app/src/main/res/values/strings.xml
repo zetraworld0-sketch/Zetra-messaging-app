@@ -5,22 +5,42 @@
     <string name="from">Powered by</string>
 
     <string name="sign_up">Initialize Zetra ID</string>
-    <string name="phone_number">Zetra ID</string> <string name="username">Network Alias</string>
-    <string name="get_otp">Verify Identity</string>
-    <string name="enter_the_otp_sent_on">Enter Security Key for</string>
-    <string name="otp">Security Key</string>
-    <string name="confirm_otp">Authenticate</string>
-    
-    <string name="chats">Sovereign Node</string>
-    <string name="updates">Network Logs</string>
-    <string name="calls">Encryption Bridge</string>
-    <string name="where_dem_chats_at">Scanning for active nodes...</string>
-    <string name="username_please_nyour_search_awaits">Input Zetra ID to begin search.</string>
-    
+    <string name="sign_in">Authorize Node</string>
+    <string name="phone_number">Zetra ID</string>
+    <string name="email">Zetra Mail</string>
+    <string name="password">Security Cipher</string>
+    <string name="otp">Verification Key</string>
+    <string name="get_otp">Request Key</string>
+    <string name="confirm_otp">Validate Identity</string>
+    <string name="continue_with_email">Access via Zetra Mail</string>
+    <string name="continue_with_phone_number">Access via Zetra ID</string>
+    <string name="already_have_an_account">Existing Node?</string>
+    <string name="continue_with_your">Connect to your</string>
+    <string name="sign_up_with_your">Register your</string>
+    <string name="wrong_phone_number">Invalid ID?</string>
+    <string name="change">Modify</string>
+    <string name="enter_the_otp_sent_on">Enter key sent to</string>
+
+    <string name="username">Network Alias</string>
+    <string name="username_without">Alias (Internal Only)</string>
     <string name="name">Scientific Name</string>
     <string name="date_of_birth">Registry Date</string>
     <string name="gender">Classification</string>
-    <string name="continue_with_email">Access via Zetra Mail</string>
-    <string name="continue_with_phone_number">Access via Zetra ID</string>
-    <string name="plus_icon">Add Node</string>
-    <string name="phone_number_format">%s</string> </resources>
+
+    <string name="chats">Sovereign Nodes</string>
+    <string name="updates">Network Logs</string>
+    <string name="calls">Encryption Bridge</string>
+    <string name="start_chat">Open Connection</string>
+    <string name="where_dem_chats_at">Scanning for active nodes...</string>
+    <string name="calls_section_is_coming_later">Bridge protocols offline.</string>
+    <string name="updates_section_is_coming_soon">Logs pending synchronization.</string>
+    <string name="username_please_nyour_search_awaits">Input Alias to begin search.</string>
+
+    <string name="logo_of_the_app_for_the_landing_page">Netscape Insignia</string>
+    <string name="plus_icon">Add Protocol</string>
+    <string name="woman_waiting_on_a_chair_with_a_phone_in_hand">Node standby</string>
+    <string name="man_waiting_with_an_umbrella">Secure standby</string>
+    <string name="man_searching_for_something_with_binoculars">Scanning network</string>
+    <string name="woman_looking_at_photos_of_people_with_a_magnifying_glass">Inspecting aliases</string>
+    <string name="phone_number_format">%s</string>
+</resources>
