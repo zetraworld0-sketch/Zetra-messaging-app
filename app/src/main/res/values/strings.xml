@@ -1,46 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Netscape</string>
-    <string name="welcome_to">Welcome to Netscape Sovereign Hub</string>
-    <string name="creator">Zetra Lab</string>
-    <string name="from">Powered by</string>
+    <string name="welcome_to">Initializing Netscape Sovereign Hub</string>
+    <string name="creator">ZETRA LABS</string>
+    <string name="from">Infrastructure by</string>
 
-    <string name="sign_up">Initialize Zetra ID</string>
-    <string name="sign_in">Authorize Node</string>
+    <string name="sign_up">Initialize Node</string>
+    <string name="sign_in">Authorize Access</string>
     <string name="phone_number">Zetra ID</string>
-    <string name="email">Zetra Mail</string>
+    <string name="email">Sovereign Mail</string>
     <string name="password">Security Cipher</string>
-    <string name="otp">Verification Key</string>
-    <string name="get_otp">Request Key</string>
+    <string name="otp">Authentication Key</string>
+    <string name="get_otp">Request Protocol Key</string>
     <string name="confirm_otp">Validate Identity</string>
-    <string name="continue_with_email">Access via Zetra Mail</string>
-    <string name="continue_with_phone_number">Access via Zetra ID</string>
-    <string name="already_have_an_account">Existing Node?</string>
-    <string name="continue_with_your">Connect to your</string>
-    <string name="sign_up_with_your">Register your</string>
-    <string name="wrong_phone_number">Invalid ID?</string>
-    <string name="change">Modify</string>
-    <string name="enter_the_otp_sent_on">Enter key sent to</string>
+    <string name="continue_with_email">Access via Mail Bridge</string>
+    <string name="continue_with_phone_number">Access via ID Bridge</string>
+    <string name="already_have_an_account">Recognized Node?</string>
+    <string name="continue_with_your">Connect to</string>
+    <string name="sign_up_with_your">Registry of</string>
+    <string name="wrong_phone_number">ID Conflict?</string>
+    <string name="change">Re-configure</string>
+    <string name="enter_the_otp_sent_on">Input key relayed to</string>
 
     <string name="username">Network Alias</string>
-    <string name="username_without">Alias (Internal Only)</string>
-    <string name="name">Scientific Name</string>
-    <string name="date_of_birth">Registry Date</string>
-    <string name="gender">Classification</string>
+    <string name="username_without">Internal Alias</string>
+    <string name="name">Entity Designation</string>
+    <string name="date_of_birth">Commission Date</string>
+    <string name="gender">Operational Class</string>
 
-    <string name="chats">Sovereign Nodes</string>
-    <string name="updates">Network Logs</string>
-    <string name="calls">Encryption Bridge</string>
-    <string name="start_chat">Open Connection</string>
-    <string name="where_dem_chats_at">Scanning for active nodes...</string>
-    <string name="calls_section_is_coming_later">Bridge protocols offline.</string>
-    <string name="updates_section_is_coming_soon">Logs pending synchronization.</string>
-    <string name="username_please_nyour_search_awaits">Input Alias to begin search.</string>
+    <string name="chats">Active Nodes</string>
+    <string name="updates">Traffic Logs</string>
+    <string name="calls">Uplink Bridge</string>
+    <string name="start_chat">Establish Link</string>
+    <string name="where_dem_chats_at">Scanning frequencies for active nodes...</string>
+    <string name="calls_section_is_coming_later">Uplink protocols currently offline.</string>
+    <string name="updates_section_is_coming_soon">Data logs pending synchronization.</string>
+    <string name="username_please_nyour_search_awaits">Input Alias to begin network scan.</string>
 
-    <string name="logo_of_the_app_for_the_landing_page">Netscape Insignia</string>
-    <string name="plus_icon">Add Protocol</string>
-    <string name="woman_waiting_on_a_chair_with_a_phone_in_hand">Node standby</string>
-    <string name="man_waiting_with_an_umbrella">Secure standby</string>
-    <string name="man_searching_for_something_with_binoculars">Scanning network</string>
-    <string name="woman_looking_at_photos_of_people_with_a_magnifying_glass">Inspecting aliases</string>
+    <string name="logo_of_the_app_for_the_landing_page">Zetra Insignia</string>
+    <string name="plus_icon">New Protocol</string>
+    <string name="woman_waiting_on_a_chair_with_a_phone_in_hand">Node Standby</string>
+    <string name="man_waiting_with_an_umbrella">Secure Standby</string>
+    <string name="man_searching_for_something_with_binoculars">Scanning Infrastructure</string>
+    <string name="woman_looking_at_photos_of_people_with_a_magnifying_glass">Inspecting Linked Nodes</string>
     <string name="phone_number_format">%s</string>
 </resources>
