@@ -28,33 +28,31 @@
             android:src="@drawable/no_chats"
             android:layout_gravity="center"
             android:visibility="gone"
-            android:contentDescription="No active nodes detected" />
+            android:contentDescription="Zetra Hub Active" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="32dp"
-            android:text="@string/where_dem_chats_at"
-            android:textColor="#475569"
+            android:text="Start a secure conversation"
+            android:textColor="#94A3B8"
             android:textAlignment="center"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:fontFamily="@font/dm_sans"
-            android:letterSpacing="0.1" />
+            android:letterSpacing="0.05" />
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/extended_fab"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_new_chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:layout_gravity="bottom|end"
-        android:text="@string/start_chat"
-        android:textColor="@color/true_black"
-        android:fontFamily="@font/dm_sans"
-        android:textAllCaps="true"
+        app:srcCompat="@drawable/logo_icon"
         app:backgroundTint="@color/zetra_blue"
-        app:icon="@drawable/logo_icon"
-        app:iconTint="@color/true_black"/>
+        app:tint="@color/true_black"
+        app:elevation="6dp"
+        android:contentDescription="@string/start_new_chat"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
