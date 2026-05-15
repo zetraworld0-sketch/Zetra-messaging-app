@@ -43,9 +43,50 @@
 
     <style name="Theme.Conversa" parent="Base.Theme.Conversa" />
 
+    <style name="TextAppearance.Conversa.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
     <style name="TextAppearance.Conversa.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
         <item name="fontFamily">@font/dm_sans</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
-    
-    </resources>
+    <style name="TextAppearance.Conversa.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+    <style name="TextAppearance.Conversa.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/dm_sans</item>
+    </style>
+</resources>
