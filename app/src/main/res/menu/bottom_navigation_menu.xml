@@ -4,15 +4,15 @@
         android:id="@+id/chatsFragment"
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="Active Nodes"/> 
+        android:title="chat"/> 
     <item
         android:id="@+id/storiesFragment"
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="Traffic"/> 
+        android:title="status"/> 
     <item
         android:id="@+id/callHistoryFragment"
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_compass"
-        android:title="Uplink"/> 
+        android:title="call"/> 
 </menu>
