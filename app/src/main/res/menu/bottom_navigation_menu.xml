@@ -1,18 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/chatsFragment"
-        android:enabled="true"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="chat"/> 
+        android:id="@+id/navigation_chats"
+        android:icon="@drawable/logo_icon"
+        android:title="Chats" />
     <item
-        android:id="@+id/storiesFragment"
-        android:enabled="true"
-        android:icon="@android:drawable/ic_menu_share"
-        android:title="status"/> 
+        android:id="@+id/navigation_status"
+        android:icon="@drawable/logo_icon"
+        android:title="Updates" />
     <item
-        android:id="@+id/callHistoryFragment"
-        android:enabled="true"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="call"/> 
+        android:id="@+id/navigation_calls"
+        android:icon="@drawable/logo_icon"
+        android:title="Calls" />
 </menu>
