@@ -3,13 +3,16 @@
     <item
         android:id="@+id/chatsFragment"
         android:enabled="true"
-        android:icon="@drawable/chat_selector"
-        android:title="@string/chats"/> <item
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Active Nodes"/> 
+    <item
         android:id="@+id/storiesFragment"
         android:enabled="true"
-        android:icon="@drawable/sparkle_selector"
-        android:title="@string/updates"/> <item
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="Traffic"/> 
+    <item
         android:id="@+id/callHistoryFragment"
         android:enabled="true"
-        android:icon="@drawable/phone_selector"
-        android:title="@string/calls"/> </menu>
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Uplink"/> 
+</menu>
