@@ -4,6 +4,8 @@
     <color name="true_black">#000000</color>
     <color name="surface_dark">#0A0A0A</color>
 
+    <color name="seed">#00A3FF</color>
+
     <color name="md_theme_light_primary">#00A3FF</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_background">#000000</color>
