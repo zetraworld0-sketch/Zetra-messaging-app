@@ -54,7 +54,7 @@
         android:fontFamily="@font/dm_sans"
         android:textAllCaps="true"
         app:backgroundTint="@color/zetra_blue"
-        app:icon="@drawable/plus_icon"
+        app:icon="@drawable/logo_icon"
         app:iconTint="@color/true_black"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
