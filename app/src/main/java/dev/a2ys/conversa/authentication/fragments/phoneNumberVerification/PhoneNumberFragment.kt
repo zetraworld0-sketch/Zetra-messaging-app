@@ -29,22 +29,39 @@ class PhoneNumberFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         binding.submit.setOnClickListener {
-            var zetraId = binding.phoneNumber.editText?.text?.toString()?.trim() ?: ""
+            var rawInput = binding.phoneNumber.editText?.text?.toString()?.trim() ?: ""
 
-            if (zetraId.isEmpty()) {
+            if (rawInput.isEmpty()) {
                 showError("Please enter a valid phone number!")
             } else {
-                // Ensure number has international E.164 formatting prefix (e.g., +234)
-                if (!zetraId.startsWith("+")) {
-                    zetraId = "+$zetraId"
-                }
+                // Institutional Phone Protocol Formatter (E.164 compliance)
+                val cleanNumber = formatToE164(rawInput)
                 
                 // Initialize the structural verification stream
-                startPhoneAuthentication(zetraId)
+                startPhoneAuthentication(cleanNumber)
             }
         }
 
         return binding.root
+    }
+
+    private fun formatToE164(input: String): String {
+        // Strip out any accidental spaces or dashes
+        var normalized = input.replace("\\s+".toRegex(), "").replace("-", "")
+
+        // If the user already provided the country code with +, use it directly
+        if (normalized.startsWith("+")) {
+            return normalized
+        }
+
+        // Handle standard regional formatting context (e.g., converting 080... to +23480...)
+        if (normalized.startsWith("0")) {
+            normalized = normalized.substring(1)
+        }
+
+        // Inject your country code protocol prefix (+234 for Nigeria)
+        // Change "234" below if your primary staging environment is in another region
+        return "+234$normalized"
     }
 
     private fun startPhoneAuthentication(phoneNumber: String) {
