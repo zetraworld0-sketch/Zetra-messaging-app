@@ -40,19 +40,11 @@ class ChatsFragment : Fragment() {
 
         updateUI()
 
-        binding.extendedFab.setOnClickListener {
+        // Safely bind to the layout component to link up the search engine
+        binding.root.findViewById<View>(R.id.start_chat)?.setOnClickListener {
             Navigation.findNavController(requireActivity(), R.id.main_navigation)
                 .navigate(R.id.action_chatsFragment_to_userSearchFragment)
         }
-
-//        val newChat1 = Chat("ABC", "Hello")
-//        val newChat2 = Chat("XYZ", "Hi")
-//
-//        chatList.add(newChat1)
-//        chatList.add(newChat2)
-//
-//        updateUI()
-//        adapter.notifyItemInserted(chatList.size - 1)
 
         return binding.root
     }
