@@ -40,8 +40,8 @@ class ChatsFragment : Fragment() {
 
         updateUI()
 
-        // Safely bind to the layout component to link up the search engine
-        binding.root.findViewById<View>(R.id.start_chat)?.setOnClickListener {
+        // Explicit structural mapping to your verified layout ID: fab_new_chat
+        binding.fabNewChat.setOnClickListener {
             Navigation.findNavController(requireActivity(), R.id.main_navigation)
                 .navigate(R.id.action_chatsFragment_to_userSearchFragment)
         }
