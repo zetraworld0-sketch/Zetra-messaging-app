@@ -31,27 +31,17 @@ class PhoneNumberFragment : Fragment() {
         binding.submit.setOnClickListener {
             val rawInput = binding.phoneNumber.editText?.text?.toString()?.trim() ?: ""
 
-            // Simple length validation: ensure they typed an actual country code + phone sequence
             if (rawInput.isEmpty() || rawInput.length < 7) {
                 showError("Please enter a complete international number (e.g. +234...)")
             } else {
-                // Dynamically sanitize what they typed without forcing a hardcoded region
                 val formattedNumber = formatFlexibleInternational(rawInput)
                 
-                // Save the exact formatted string for the OTP verification fragment
-                val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-                with(sharedPref.edit()) {
-                    putString("number", formattedNumber)
-                    // Set a fallback staging ID so the app UI can advance immediately during investor demos
-                    putString("verification_id", "STAGING_TEST_SESSION_ID")
-                    apply()
-                }
+                // Show loader, hide button to prevent double-clicks
+                binding.submit.visibility = View.GONE
+                binding.progressCircular.visibility = View.VISIBLE
                 
-                // Dispatch live network request to Firebase in the background
+                // Dispatch live network request to Firebase
                 startPhoneAuthentication(formattedNumber)
-                
-                // Route the user straight to the security gate screen
-                navigateToOtpVerificationFragment()
             }
         }
 
@@ -59,50 +49,61 @@ class PhoneNumberFragment : Fragment() {
     }
 
     private fun formatFlexibleInternational(input: String): String {
-        // Strip out any spaces or dashes they might have typed
         var normalized = input.replace("\\s+".toRegex(), "").replace("-", "")
 
-        // If they explicitly typed the '+' prefix, trust it completely and return it
         if (normalized.startsWith("+")) {
             return normalized
         }
 
-        // If they typed the country code but forgot the '+', prepend it automatically
         return "+$normalized"
     }
 
     private fun startPhoneAuthentication(phoneNumber: String) {
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: com.google.firebase.auth.PhoneAuthCredential) {}
+            override fun onVerificationCompleted(credential: com.google.firebase.auth.PhoneAuthCredential) {
+                binding.progressCircular.visibility = View.GONE
+                binding.submit.visibility = View.VISIBLE
+            }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                // Logged internally to keep staging fallback working smoothly
+                binding.progressCircular.visibility = View.GONE
+                binding.submit.visibility = View.VISIBLE
+                showError("SMS Routing Failed: ${e.message}")
             }
 
             override fun onCodeSent(
                 verificationId: String,
                 token: PhoneAuthProvider.ForceResendingToken
             ) {
-                // If live connection succeeds, silently update with the real network token
+                binding.progressCircular.visibility = View.GONE
+                binding.submit.visibility = View.VISIBLE
+
+                // Save parameters using unified "phone_number" key matching OtpVerificationFragment
                 val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
                 with(sharedPref.edit()) {
+                    putString("phone_number", phoneNumber)
                     putString("verification_id", verificationId)
                     apply()
                 }
+                
+                // Now that the network has confirmed shipment, transition screens safely
+                navigateToOtpVerificationFragment()
             }
         }
 
         try {
             val options = PhoneAuthOptions.newBuilder(auth)
                 .setPhoneNumber(phoneNumber)
-                .setTimeout(10L, TimeUnit.SECONDS)
+                .setTimeout(60L, TimeUnit.SECONDS) // Standard production window allowance
                 .setActivity(requireActivity())
                 .setCallbacks(callbacks)
                 .build()
                 
             PhoneAuthProvider.verifyPhoneNumber(options)
         } catch (e: Exception) {
-            // Protects execution thread from unexpected initialization crashes
+            binding.progressCircular.visibility = View.GONE
+            binding.submit.visibility = View.VISIBLE
+            showError("Initialization Error: ${e.message}")
         }
     }
 
