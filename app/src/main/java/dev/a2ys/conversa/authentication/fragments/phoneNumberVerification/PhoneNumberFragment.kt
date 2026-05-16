@@ -1,11 +1,11 @@
 package dev.a2ys.conversa.authentication.fragments.phoneNumberVerification
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import dev.a2ys.conversa.R
 import dev.a2ys.conversa.databinding.FragmentPhoneNumberBinding
 import com.google.android.material.snackbar.Snackbar
@@ -63,8 +63,12 @@ class PhoneNumberFragment : Fragment() {
 
     private fun finalizeAuthenticationSuccess() {
         resetUiState()
-        Navigation.findNavController(requireActivity(), R.id.user_authentication_navigation_fragment)
-            .navigate(R.id.action_phoneNumberFragment_to_otpVerificationFragment)
+        
+        // Dynamically launches your main chat activity container and clears the login stack completely
+        val intent = Intent(requireActivity(), Class.forName("dev.a2ys.conversa.main.activities.MainActivity"))
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        requireActivity().finish()
     }
 
     private fun resetUiState() {
