@@ -32,6 +32,7 @@
     <string name="updates">Traffic Logs</string>
     <string name="calls">Uplink Bridge</string>
     <string name="start_chat">Establish Link</string>
+    <string name="start_new_chat">Initialize New Communication Link</string>
     <string name="where_dem_chats_at">Scanning frequencies for active nodes...</string>
     <string name="calls_section_is_coming_later">Uplink protocols currently offline.</string>
     <string name="updates_section_is_coming_soon">Data logs pending synchronization.</string>
