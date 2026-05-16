@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/user_authentication_navigation"
     app:startDestination="@id/authChooserFragment">
+    
     <fragment
         android:id="@+id/authChooserFragment"
         android:name="dev.a2ys.conversa.authentication.fragments.AuthChooserFragment"
@@ -17,22 +18,11 @@
             app:popEnterAnim="@anim/from_left"
             app:popExitAnim="@anim/to_right" />
     </fragment>
+    
     <fragment
         android:id="@+id/phoneNumberFragment"
         android:name="dev.a2ys.conversa.authentication.fragments.phoneNumberVerification.PhoneNumberFragment"
         android:label="fragment_phone_number"
-        tools:layout="@layout/fragment_phone_number" >
-        <action
-            android:id="@+id/action_phoneNumberFragment_to_otpVerificationFragment"
-            app:destination="@id/otpVerificationFragment"
-            app:enterAnim="@anim/from_right"
-            app:exitAnim="@anim/to_left"
-            app:popEnterAnim="@anim/from_left"
-            app:popExitAnim="@anim/to_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/otpVerificationFragment"
-        android:name="dev.a2ys.conversa.authentication.fragments.phoneNumberVerification.OtpVerificationFragment"
-        android:label="fragment_otp_verification"
-        tools:layout="@layout/fragment_otp_verification" />
+        tools:layout="@layout/fragment_fragment_phone_number" />
+        
 </navigation>
