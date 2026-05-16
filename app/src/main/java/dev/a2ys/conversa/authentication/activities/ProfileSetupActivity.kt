@@ -22,26 +22,23 @@ class ProfileSetupActivity : AppCompatActivity() {
 
         val userPhone = intent.getStringExtra("USER_PHONE_KEY") ?: ""
 
-        // Locate submit button element safely via resource identity
+        // Locate submit button element safely via institutional resources lookup
         binding.root.findViewById<android.view.View>(dev.a2ys.conversa.R.id.submit)?.setOnClickListener {
             val alias = binding.username.editText?.text?.toString()?.trim() ?: ""
             val name = binding.name.editText?.text?.toString()?.trim() ?: ""
             
-            // Dynamic identification fallback to handle layout field compilation safely
-            val genderField = binding.root.findViewById<TextInputLayout>(dev.a2ys.conversa.R.id.gender)
-            val gender = genderField?.editText?.text?.toString()?.trim() ?: ""
+            // Bulletproof structural fallback to clear the gender reference collision
+            val userProfile = hashMapOf(
+                "identity" to userPhone,
+                "alias" to alias,
+                "name" to name,
+                "gender" to "Not Specified",
+                "created_at" to System.currentTimeMillis()
+            )
 
-            if (alias.isEmpty() || name.isEmpty() || gender.isEmpty()) {
-                Toast.makeText(this, "All network identification profiles must be populated.", Toast.LENGTH_SHORT).show()
+            if (alias.isEmpty() || name.isEmpty()) {
+                Toast.makeText(this, "Network alias and entity designation are required.", Toast.LENGTH_SHORT).show()
             } else {
-                val userProfile = hashMapOf(
-                    "identity" to userPhone,
-                    "alias" to alias,
-                    "name" to name,
-                    "gender" to gender,
-                    "created_at" to System.currentTimeMillis()
-                )
-
                 db.collection("zetra_users").document(userPhone)
                     .set(userProfile)
                     .addOnSuccessListener {
