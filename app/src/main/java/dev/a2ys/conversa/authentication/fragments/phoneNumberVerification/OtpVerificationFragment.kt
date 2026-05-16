@@ -11,11 +11,14 @@ import androidx.navigation.Navigation
 import dev.a2ys.conversa.R
 import dev.a2ys.conversa.databinding.FragmentOtpVerificationBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
 import dev.a2ys.conversa.main.activities.MainActivity
+import dev.a2ys.conversa.authentication.activities.ProfileSetupActivity
 
 class OtpVerificationFragment : Fragment() {
 
     private lateinit var binding: FragmentOtpVerificationBinding
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,7 +29,7 @@ class OtpVerificationFragment : Fragment() {
         val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         val zetraId = sharedPref.getString("number", "Unknown Node")
 
-        // Display the Zetra ID we are authorizing
+        // Display the Zetra ID / Phone Number we are authorizing
         binding.phn.text = zetraId
 
         binding.change.setOnClickListener {
@@ -36,16 +39,35 @@ class OtpVerificationFragment : Fragment() {
         binding.submit.setOnClickListener {
             val authKey = binding.otp.editText!!.text.trim().toString()
 
-            // Institutional bypass for development
             if (authKey.length != 6) {
                 showError("Invalid Authorization Key!")
             } else {
-                // Grant Access to the Sovereign Hub
-                navigateToMainActivity()
+                if (zetraId != null && zetraId != "Unknown Node") {
+                    checkUserStatusAndRoute(zetraId)
+                } else {
+                    showError("Authentication error: Missing Node Identity.")
+                }
             }
         }
 
         return binding.root
+    }
+
+    private fun checkUserStatusAndRoute(phoneNumber: String) {
+        // Institutional Check: Look into our Zetra database registry
+        db.collection("zetra_users").document(phoneNumber).get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists() && documentSnapshot.contains("identity")) {
+                    // Existing User detected -> Proceed straight to communication hub
+                    navigateToMainActivity()
+                } else {
+                    // New User detected -> Direct to profile creation matrix
+                    navigateToProfileSetupActivity(phoneNumber)
+                }
+            }
+            .addOnFailureListener {
+                showError("Database connection timed out. Retrying...")
+            }
     }
 
     private fun showError(message: String) {
@@ -61,6 +83,13 @@ class OtpVerificationFragment : Fragment() {
 
     private fun navigateToMainActivity() {
         startActivity(Intent(requireContext(), MainActivity::class.java))
+        requireActivity().finish()
+    }
+
+    private fun navigateToProfileSetupActivity(phoneNumber: String) {
+        val intent = Intent(requireContext(), ProfileSetupActivity::class.java)
+        intent.putExtra("USER_PHONE_KEY", phoneNumber)
+        startActivity(intent)
         requireActivity().finish()
     }
 }
