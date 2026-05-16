@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import dev.a2ys.conversa.databinding.ActivityInfoBinding
 import dev.a2ys.conversa.main.activities.MainActivity
+import com.google.android.material.textfield.TextInputLayout
 
 class ProfileSetupActivity : AppCompatActivity() {
 
@@ -16,17 +17,19 @@ class ProfileSetupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Linking up precisely with your existing activity_info.xml structure
         binding = ActivityInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val userPhone = intent.getStringExtra("USER_PHONE_KEY") ?: ""
 
-        // Safe dynamic binding for your registration inputs
+        // Locate submit button element safely via resource identity
         binding.root.findViewById<android.view.View>(dev.a2ys.conversa.R.id.submit)?.setOnClickListener {
             val alias = binding.username.editText?.text?.toString()?.trim() ?: ""
             val name = binding.name.editText?.text?.toString()?.trim() ?: ""
-            val gender = binding.gender.editText?.text?.toString()?.trim() ?: ""
+            
+            // Dynamic identification fallback to handle layout field compilation safely
+            val genderField = binding.root.findViewById<TextInputLayout>(dev.a2ys.conversa.R.id.gender)
+            val gender = genderField?.editText?.text?.toString()?.trim() ?: ""
 
             if (alias.isEmpty() || name.isEmpty() || gender.isEmpty()) {
                 Toast.makeText(this, "All network identification profiles must be populated.", Toast.LENGTH_SHORT).show()
