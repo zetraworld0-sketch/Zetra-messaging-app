@@ -1,6 +1,5 @@
 package dev.a2ys.conversa.authentication.fragments.phoneNumberVerification
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,111 +9,77 @@ import androidx.navigation.Navigation
 import dev.a2ys.conversa.R
 import dev.a2ys.conversa.databinding.FragmentPhoneNumberBinding
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
-import java.util.concurrent.TimeUnit
 
 class PhoneNumberFragment : Fragment() {
 
-    private lateinit var binding: FragmentPhoneNumberBinding
+    private var _binding: FragmentPhoneNumberBinding? = null
+    private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentPhoneNumberBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentPhoneNumberBinding.inflate(inflater, container, false)
         auth = FirebaseAuth.getInstance()
 
         binding.submit.setOnClickListener {
-            val rawInput = binding.phoneNumber.editText?.text?.toString()?.trim() ?: ""
+            val email = binding.emailEditText.text.toString().trim()
+            val password = binding.passwordEditText.text.toString().trim()
 
-            if (rawInput.isEmpty() || rawInput.length < 7) {
-                showError("Please enter a complete international number (e.g. +234...)")
-            } else {
-                val formattedNumber = formatFlexibleInternational(rawInput)
-                
-                // Show loader, hide button to prevent double-clicks
-                binding.submit.visibility = View.GONE
-                binding.progressCircular.visibility = View.VISIBLE
-                
-                // Dispatch live network request to Firebase
-                startPhoneAuthentication(formattedNumber)
+            if (email.isEmpty() || password.length < 6) {
+                showError("Provide a valid email and a 6+ digit security key.")
+                return@setOnClickListener
             }
+
+            binding.submit.visibility = View.GONE
+            binding.progressCircular.visibility = View.VISIBLE
+
+            processIdentitySign(email, password)
         }
 
         return binding.root
     }
 
-    private fun formatFlexibleInternational(input: String): String {
-        var normalized = input.replace("\\s+".toRegex(), "").replace("-", "")
-
-        if (normalized.startsWith("+")) {
-            return normalized
-        }
-
-        return "+$normalized"
+    private fun processIdentitySign(email: String, javaPass: String) {
+        auth.signInWithEmailAndPassword(email, javaPass)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    finalizeAuthenticationSuccess()
+                } else {
+                    auth.createUserWithEmailAndPassword(email, javaPass)
+                        .addOnCompleteListener(requireActivity()) { createEnv ->
+                            if (createEnv.isSuccessful) {
+                                finalizeAuthenticationSuccess()
+                            } else {
+                                resetUiState()
+                                showError("Authentication Network Error: ${createEnv.exception?.message}")
+                            }
+                        }
+                }
+            }
     }
 
-    private fun startPhoneAuthentication(phoneNumber: String) {
-        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: com.google.firebase.auth.PhoneAuthCredential) {
-                binding.progressCircular.visibility = View.GONE
-                binding.submit.visibility = View.VISIBLE
-            }
+    private fun finalizeAuthenticationSuccess() {
+        resetUiState()
+        Navigation.findNavController(requireActivity(), R.id.user_authentication_navigation_fragment)
+            .navigate(R.id.action_phoneNumberFragment_to_otpVerificationFragment)
+    }
 
-            override fun onVerificationFailed(e: FirebaseException) {
-                binding.progressCircular.visibility = View.GONE
-                binding.submit.visibility = View.VISIBLE
-                showError("SMS Routing Failed: ${e.message}")
-            }
-
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
-                binding.progressCircular.visibility = View.GONE
-                binding.submit.visibility = View.VISIBLE
-
-                // Save parameters using unified "phone_number" key matching OtpVerificationFragment
-                val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-                with(sharedPref.edit()) {
-                    putString("phone_number", phoneNumber)
-                    putString("verification_id", verificationId)
-                    apply()
-                }
-                
-                // Now that the network has confirmed shipment, transition screens safely
-                navigateToOtpVerificationFragment()
-            }
-        }
-
-        try {
-            val options = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber(phoneNumber)
-                .setTimeout(60L, TimeUnit.SECONDS) // Standard production window allowance
-                .setActivity(requireActivity())
-                .setCallbacks(callbacks)
-                .build()
-                
-            PhoneAuthProvider.verifyPhoneNumber(options)
-        } catch (e: Exception) {
-            binding.progressCircular.visibility = View.GONE
-            binding.submit.visibility = View.VISIBLE
-            showError("Initialization Error: ${e.message}")
-        }
+    private fun resetUiState() {
+        binding.progressCircular.visibility = View.GONE
+        binding.submit.visibility = View.VISIBLE
     }
 
     private fun showError(message: String) {
-        Snackbar.make(requireActivity().findViewById(R.id.container), message, Snackbar.LENGTH_SHORT)
-            .setAction("Got it") {}
+        Snackbar.make(requireActivity().findViewById(R.id.container), message, Snackbar.LENGTH_LONG)
+            .setAction("Dismiss") {}
             .show()
     }
 
-    private fun navigateToOtpVerificationFragment() {
-        Navigation.findNavController(requireActivity(), R.id.user_authentication_navigation_fragment)
-            .navigate(R.id.action_phoneNumberFragment_to_otpVerificationFragment)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
