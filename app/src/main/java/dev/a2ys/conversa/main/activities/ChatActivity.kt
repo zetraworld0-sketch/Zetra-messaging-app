@@ -2,94 +2,133 @@ package dev.a2ys.conversa.main.activities
 
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.a2ys.conversa.models.Chat
+import dev.a2ys.conversa.models.LocalMessage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ChatActivity : AppCompatActivity() {
 
-    private lateinit var chatAdapter: ChatAdapter
-    private lateinit var messageList: ArrayList<Chat>
-    private lateinit var database: FirebaseDatabase
-
     private lateinit var chatRecyclerView: RecyclerView
-    private lateinit var etMessageInput: EditText
-    private lateinit var btnSendMessage: ImageButton
-    private lateinit var chatToolbar: Toolbar
+    private lateinit var messageBox: EditText
+    private lateinit var sendButton: ImageView
+    private lateinit var messageAdapter: ChatAdapter
+    private lateinit var messageList: ArrayList<Chat>
+    private lateinit var mDbRef: DatabaseReference
+    private lateinit var db: AppDatabase
 
-    private var receiverRoom: String? = null
-    private var senderRoom: String? = null
+    var receiverRoom: String? = null
+    var senderRoom: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(resources.getIdentifier("activity_chat", "layout", packageName))
 
-        database = FirebaseDatabase.getInstance()
-        messageList = ArrayList()
-
-        // Direct layout lookups to bypass R file errors
-        chatRecyclerView = findViewById(resources.getIdentifier("chatRecyclerView", "id", packageName))
-        etMessageInput = findViewById(resources.getIdentifier("etMessageInput", "id", packageName))
-        btnSendMessage = findViewById(resources.getIdentifier("btnSendMessage", "id", packageName))
-        chatToolbar = findViewById(resources.getIdentifier("chatToolbar", "id", packageName))
-
+        val name = intent.getStringExtra("receiverName")
         val receiverUid = intent.getStringExtra("receiverUid")
-        val receiverName = intent.getStringExtra("receiverName")
         val senderUid = FirebaseAuth.getInstance().currentUser?.uid
 
-        setSupportActionBar(chatToolbar)
-        supportActionBar?.title = receiverName ?: "Secure Session"
+        mDbRef = FirebaseDatabase.getInstance().reference
+        db = AppDatabase.getDatabase(this)
 
         senderRoom = receiverUid + senderUid
         receiverRoom = senderUid + receiverUid
 
-        chatAdapter = ChatAdapter(this, messageList)
+        supportActionBar?.title = name
+
+        // Dynamic resource matching for reflection stability
+        chatRecyclerView = findViewById(resources.getIdentifier("chatRecyclerView", "id", packageName))
+        messageBox = findViewById(resources.getIdentifier("messageBox", "id", packageName))
+        sendButton = findViewById(resources.getIdentifier("sendButton", "id", packageName))
+
+        messageList = ArrayList()
+        messageAdapter = ChatAdapter(this, messageList)
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
-        chatRecyclerView.adapter = chatAdapter
+        chatRecyclerView.adapter = messageAdapter
 
-        senderRoom?.let { room ->
-            database.reference.child("chats").child(room).child("messages")
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        messageList.clear()
-                        for (postSnapshot in snapshot.children) {
-                            val message = postSnapshot.getValue(Chat::class.java)
-                            if (message != null) {
-                                messageList.add(message)
-                            }
+        // Load offline chat cache instantly from local disk before fetching cloud updates
+        if (senderUid != null && receiverUid != null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val cache = db.messageDao().getChatHistory(senderUid, receiverUid)
+                withContext(Dispatchers.Main) {
+                    if (messageList.isEmpty() && cache.isNotEmpty()) {
+                        for (localMsg in cache) {
+                            messageList.add(Chat(localMsg.messageText, localMsg.senderUid))
                         }
-                        chatAdapter.notifyDataSetChanged()
-                        if (messageList.isNotEmpty()) {
-                            chatRecyclerView.scrollToPosition(messageList.size - 1)
-                        }
+                        messageAdapter.notifyDataSetChanged()
+                        chatRecyclerView.scrollToPosition(messageList.size - 1)
                     }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        // Safe exit block
-                    }
-                })
+                }
+            }
         }
 
-        btnSendMessage.setOnClickListener {
-            val messageText = etMessageInput.text.toString().trim()
-            if (messageText.isNotEmpty() && senderUid != null) {
-                val messageObject = Chat(sender = senderUid, message = messageText)
-
-                senderRoom?.let { sRoom ->
-                    database.reference.child("chats").child(sRoom).child("messages").push()
-                        .setValue(messageObject).addOnSuccessListener {
-                            receiverRoom?.let { rRoom ->
-                                database.reference.child("chats").child(rRoom).child("messages").push()
-                                    .setValue(messageObject)
+        // Real-time Cloud Stream Sync Engine
+        mDbRef.child("chats").child(senderRoom!!).child("messages")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    messageList.clear()
+                    for (postSnapshot in snapshot.children) {
+                        val message = postSnapshot.getValue(Chat::class.java)
+                        if (message != null) {
+                            messageList.add(message)
+                            
+                            // Silently write cloud payload to local disk for offline persistence
+                            if (senderUid != null && receiverUid != null) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    db.messageDao().insertMessage(
+                                        LocalMessage(
+                                            senderUid = message.sender ?: "",
+                                            receiverUid = if (message.sender == senderUid) receiverUid else senderUid,
+                                            messageText = message.message ?: "",
+                                            timestamp = System.currentTimeMillis()
+                                        )
+                                    )
+                                }
                             }
                         }
+                    }
+                    messageAdapter.notifyDataSetChanged()
+                    chatRecyclerView.scrollToPosition(messageList.size - 1)
                 }
-                etMessageInput.setText("")
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Operational boundary
+                }
+            })
+
+        // Secure Data Push Transmission Flow
+        sendButton.setOnClickListener {
+            val message = messageBox.text.toString().trim()
+            if (message.isNotEmpty() && senderUid != null && receiverUid != null) {
+                val messageObject = Chat(message, senderUid)
+
+                // 1. Immediately cache the user payload locally for zero-latency execution
+                CoroutineScope(Dispatchers.IO).launch {
+                    db.messageDao().insertMessage(
+                        LocalMessage(
+                            senderUid = senderUid,
+                            receiverUid = receiverUid,
+                            messageText = message,
+                            timestamp = System.currentTimeMillis()
+                        )
+                    )
+                }
+
+                // 2. Transmit payload directly to the network cloud graph
+                mDbRef.child("chats").child(senderRoom!!).child("messages").push()
+                    .setValue(messageObject).addOnSuccessListener {
+                        mDbRef.child("chats").child(receiverRoom!!).child("messages").push()
+                            .setValue(messageObject)
+                    }
+                messageBox.setText("")
             }
         }
     }
