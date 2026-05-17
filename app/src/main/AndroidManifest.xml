@@ -14,8 +14,7 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.Conversa"
-        tools:targetApi="31"
-        tools:replace="android:icon,android:roundIcon,android:label">
+        tools:targetApi="31">
 
         <activity
             android:name="dev.a2ys.conversa.authentication.activities.InfoActivity"
