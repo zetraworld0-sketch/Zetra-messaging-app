@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -61,4 +62,8 @@ dependencies {
 
     // Other dependencies
     implementation 'com.google.android.gms:play-services-auth:21.2.0'
+
+    // Local Storage Layer (Room Architecture)
+    implementation "androidx.room:room-runtime:2.6.1"
+    ksp "androidx.room:room-compiler:2.6.1"
 }
