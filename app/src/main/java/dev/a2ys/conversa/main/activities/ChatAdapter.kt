@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import dev.a2ys.conversa.R
 import dev.a2ys.conversa.models.Chat
 import com.google.firebase.auth.FirebaseAuth
 
@@ -19,12 +18,17 @@ class ChatAdapter(
     private val ITEM_SENT = 2
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(context)
+        val pkg = context.packageName
+        
         return if (viewType == ITEM_SENT) {
-            val view = LayoutInflater.from(context).inflate(R.layout.item_sent_message, parent, false)
-            SentViewHolder(view)
+            val layoutId = context.resources.getIdentifier("item_sent_message", "layout", pkg)
+            val view = inflater.inflate(layoutId, parent, false)
+            SentViewHolder(view, context)
         } else {
-            val view = LayoutInflater.from(context).inflate(R.layout.item_received_message, parent, false)
-            ReceiverViewHolder(view)
+            val layoutId = context.resources.getIdentifier("item_received_message", "layout", pkg)
+            val view = inflater.inflate(layoutId, parent, false)
+            ReceiverViewHolder(view, context)
         }
     }
 
@@ -53,11 +57,13 @@ class ChatAdapter(
         return messageList.size
     }
 
-    class SentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val sentMessage: TextView = itemView.findViewById(R.id.tvSentMessage)
+    class SentViewHolder(itemView: View, ctx: Context) : RecyclerView.ViewHolder(itemView) {
+        val id = ctx.resources.getIdentifier("tvSentMessage", "id", ctx.packageName)
+        val sentMessage: TextView = itemView.findViewById(id)
     }
 
-    class ReceiverViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val receivedMessage: TextView = itemView.findViewById(R.id.tvReceivedMessage)
+    class ReceiverViewHolder(itemView: View, ctx: Context) : RecyclerView.ViewHolder(itemView) {
+        val id = ctx.resources.getIdentifier("tvReceivedMessage", "id", ctx.packageName)
+        val receivedMessage: TextView = itemView.findViewById(id)
     }
 }
