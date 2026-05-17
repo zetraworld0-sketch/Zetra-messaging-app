@@ -33,7 +33,7 @@ class ChatActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
         messageList = ArrayList()
 
-        // Explicit View Assignments to safeguard build pipeline
+        // Explicit View Assignments
         chatRecyclerView = findViewById(R.id.chatRecyclerView)
         etMessageInput = findViewById(R.id.etMessageInput)
         btnSendMessage = findViewById(R.id.btnSendMessage)
