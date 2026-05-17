@@ -1,29 +1,22 @@
-package dev.a2ys.conversa.authentication.activities
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://tools.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".authentication.activities.UserAuthenticationActivity">
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
-import dev.a2ys.conversa.databinding.ActivityUserAuthenticationBinding
-import dev.a2ys.conversa.main.activities.MainActivity
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/user_authentication_navigation_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/user_authentication_navigation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-class UserAuthenticationActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityUserAuthenticationBinding
-    private lateinit var auth: FirebaseAuth
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        
-        binding = ActivityUserAuthenticationBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        auth = FirebaseAuth.getInstance()
-
-        // If user is already logged in, route immediately to the main shell
-        if (auth.currentUser != null) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
-    }
-}
+</androidx.constraintlayout.widget.ConstraintLayout>
