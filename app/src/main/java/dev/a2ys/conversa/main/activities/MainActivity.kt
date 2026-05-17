@@ -51,7 +51,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> {
-                Snackbar.make(binding.root, "Settings configuration protocol launched.", Snackbar.LENGTH_SHORT).show()
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
                 true
             }
             R.id.action_new_group -> {
