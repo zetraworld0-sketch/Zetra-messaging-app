@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/communitiesFragment"
-        android:icon="@android:drawable/ic_menu_agenda"
+        android:icon="@android:drawable/ic_menu_my_calendar"
         android:title="Communities" />
 
     <item
         android:id="@+id/chatsFragment"
-        android:icon="@android:drawable/ic_communication"
+        android:icon="@android:drawable/ic_menu_send"
         android:title="Chats" />
 
     <item
