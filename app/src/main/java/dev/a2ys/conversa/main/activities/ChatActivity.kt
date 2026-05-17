@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import dev.a2ys.conversa.R
 import dev.a2ys.conversa.models.Chat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -28,16 +27,16 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
+        setContentView(resources.getIdentifier("activity_chat", "layout", packageName))
 
         database = FirebaseDatabase.getInstance()
         messageList = ArrayList()
 
-        // Explicit View Assignments
-        chatRecyclerView = findViewById(R.id.chatRecyclerView)
-        etMessageInput = findViewById(R.id.etMessageInput)
-        btnSendMessage = findViewById(R.id.btnSendMessage)
-        chatToolbar = findViewById(R.id.chatToolbar)
+        // Direct layout lookups to bypass R file errors
+        chatRecyclerView = findViewById(resources.getIdentifier("chatRecyclerView", "id", packageName))
+        etMessageInput = findViewById(resources.getIdentifier("etMessageInput", "id", packageName))
+        btnSendMessage = findViewById(resources.getIdentifier("btnSendMessage", "id", packageName))
+        chatToolbar = findViewById(resources.getIdentifier("chatToolbar", "id", packageName))
 
         val receiverUid = intent.getStringExtra("receiverUid")
         val receiverName = intent.getStringExtra("receiverName")
@@ -71,7 +70,7 @@ class ChatActivity : AppCompatActivity() {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Operational fail-safe
+                        // Safe exit block
                     }
                 })
         }
