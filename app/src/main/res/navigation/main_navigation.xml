@@ -21,6 +21,7 @@
             android:id="@+id/action_chatsFragment_to_userSearchFragment"
             app:destination="@id/userSearchFragment"/>
     </fragment>
+
     <fragment
         android:id="@+id/storiesFragment"
         android:name="dev.a2ys.conversa.main.fragments.StoriesFragment"
@@ -34,11 +35,13 @@
             app:popEnterAnim="@anim/from_left"
             app:popExitAnim="@anim/to_right" />
     </fragment>
+
     <fragment
         android:id="@+id/callHistoryFragment"
         android:name="dev.a2ys.conversa.main.fragments.CallHistoryFragment"
         android:label="fragment_call_history"
         tools:layout="@layout/fragment_call_history" />
+
     <fragment
         android:id="@+id/userSearchFragment"
         android:name="dev.a2ys.conversa.main.fragments.UserSearchFragment"
@@ -48,4 +51,11 @@
             android:id="@+id/action_userSearchFragment_to_chatsFragment"
             app:destination="@id/chatsFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/communitiesFragment"
+        android:name="dev.a2ys.conversa.main.fragments.CommunitiesFragment"
+        android:label="fragment_communities"
+        tools:layout="@layout/fragment_communities" />
+
 </navigation>
