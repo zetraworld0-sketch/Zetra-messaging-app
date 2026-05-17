@@ -1,89 +1,52 @@
 package dev.a2ys.conversa.main.activities
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
-import dev.a2ys.conversa.R
-import dev.a2ys.conversa.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import dev.a2ys.conversa.models.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var database: FirebaseDatabase
-    private lateinit var auth: FirebaseAuth
+    private lateinit var userRecyclerView: RecyclerView
+    private lateinit var userList: ArrayList<User>
+    private lateinit var adapter: UserAdapter
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var mDbRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(resources.getIdentifier("activity_main", "layout", packageName))
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        mAuth = FirebaseAuth.getInstance()
+        mDbRef = FirebaseDatabase.getInstance().reference
 
-        // Set up standard toolbar support for the options dropdown menu
-        setSupportActionBar(findViewById(R.id.toolbar))
+        userList = ArrayList()
+        adapter = UserAdapter(this, userList)
 
-        database = FirebaseDatabase.getInstance()
-        auth = FirebaseAuth.getInstance()
+        // Secure explicit reflection binding
+        userRecyclerView = findViewById(resources.getIdentifier("userRecyclerView", "id", packageName))
+        userRecyclerView.layoutManager = LinearLayoutManager(this)
+        userRecyclerView.adapter = adapter
 
-        val uid: String? = auth.uid
-
-        uid?.let {
-            database.reference.child("registeredUsers").child(uid).child("onlineStatus").setValue(true)
-        }
-
-        // Safe, modern retrieval of the NavHostFragment directly from the FragmentManager
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_navigation) as NavHostFragment
-        val navController = navHostFragment.navController
-        binding.bottomNavigation.setupWithNavController(navController)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_top_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                val intent = Intent(this, ProfileActivity::class.java)
-                startActivity(intent)
-                true
+        // Stream database users while removing the current authenticated user from the local list view
+        mDbRef.child("user").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                userList.clear()
+                for (postSnapshot in snapshot.children) {
+                    val currentUser = postSnapshot.getValue(User::class.java)
+                    if (currentUser != null && mAuth.currentUser?.uid != currentUser.userId) {
+                        userList.add(currentUser)
+                    }
+                }
+                adapter.notifyDataSetChanged()
             }
-            R.id.action_new_group -> {
-                Snackbar.make(binding.root, "Group initialization layer active.", Snackbar.LENGTH_SHORT).show()
-                true
+
+            override fun onCancelled(error: DatabaseError) {
+                // Fail-safe operational boundary
             }
-            R.id.action_starred -> {
-                Snackbar.make(binding.root, "Loading secure bookmarked assets.", Snackbar.LENGTH_SHORT).show()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onResume() {
-        val uid: String? = auth.uid
-
-        uid?.let {
-            database.reference.child("registeredUsers").child(uid).child("onlineStatus").setValue(true)
-        }
-
-        super.onResume()
-    }
-
-    override fun onStop() {
-        val uid: String? = auth.uid
-
-        uid?.let {
-            database.reference.child("registeredUsers").child(uid).child("onlineStatus").setValue(false)
-        }
-
-        super.onStop()
+        })
     }
 }
