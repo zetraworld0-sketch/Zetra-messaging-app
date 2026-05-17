@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import dev.a2ys.conversa.R
 import dev.a2ys.conversa.databinding.ActivityMainBinding
@@ -37,8 +37,9 @@ class MainActivity : AppCompatActivity() {
             database.reference.child("registeredUsers").child(uid).child("onlineStatus").setValue(true)
         }
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_navigation)
-        val navController = navHostFragment!!.findNavController()
+        // Safe, modern retrieval of the NavHostFragment directly from the FragmentManager
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.main_navigation) as NavHostFragment
+        val navController = navHostFragment.navController
         binding.bottomNavigation.setupWithNavController(navController)
     }
 
