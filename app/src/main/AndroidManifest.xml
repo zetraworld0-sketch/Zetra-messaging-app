@@ -38,6 +38,10 @@
             android:name="dev.a2ys.conversa.main.activities.MainActivity"
             android:exported="false" />
 
+        <activity
+            android:name="dev.a2ys.conversa.main.activities.ProfileActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
