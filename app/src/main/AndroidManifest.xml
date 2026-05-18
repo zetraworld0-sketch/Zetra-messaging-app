@@ -47,7 +47,7 @@
 
         <activity
             android:name="dev.a2ys.conversa.main.activities.RegisterActivity"
-            android:exported="false" />
+            android:exported="true" />
         
         <activity
             android:name="dev.a2ys.conversa.main.activities.NameEntryActivity"
