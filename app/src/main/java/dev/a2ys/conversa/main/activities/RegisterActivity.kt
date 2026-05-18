@@ -15,7 +15,9 @@ class RegisterActivity : AppCompatActivity() {
 
         val phoneInput = findViewById<EditText>(R.id.phoneInput)
         val nameInput = findViewById<EditText>(R.id.nameInput)
-        val btnFinish = findViewById<Button>(R.id.btnFinish)
+        
+        // Changed R.id.btnFinish to R.id.btnNext to match your XML layout ID
+        val btnFinish = findViewById<Button>(R.id.btnNext)
 
         btnFinish.setOnClickListener {
             val phone = phoneInput.text.toString().trim()
@@ -26,7 +28,6 @@ class RegisterActivity : AppCompatActivity() {
             } else if (name.isEmpty()) {
                 Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show()
             } else {
-                // Here is where you call your database to save the phone and name
                 Toast.makeText(this, "Registering $name...", Toast.LENGTH_SHORT).show()
             }
         }
