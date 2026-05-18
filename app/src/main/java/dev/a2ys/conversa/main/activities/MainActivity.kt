@@ -26,18 +26,19 @@ class MainActivity : AppCompatActivity() {
         userList = ArrayList()
         adapter = UserAdapter(this, userList)
 
-        // Secure explicit reflection binding
         userRecyclerView = findViewById(resources.getIdentifier("userRecyclerView", "id", packageName))
         userRecyclerView.layoutManager = LinearLayoutManager(this)
         userRecyclerView.adapter = adapter
 
-        // Stream database users while removing the current authenticated user from the local list view
-        mDbRef.child("user").addValueEventListener(object : ValueEventListener {
+        // Changed path from "user" to "registeredUsers" to match your registration save location
+        mDbRef.child("registeredUsers").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 userList.clear()
                 for (postSnapshot in snapshot.children) {
                     val currentUser = postSnapshot.getValue(User::class.java)
-                    if (currentUser != null && mAuth.currentUser?.uid != currentUser.userId) {
+                    
+                    // Make sure the User model uses 'uid' or 'userId' correctly matching your DB keys
+                    if (currentUser != null && mAuth.currentUser?.uid != currentUser.uid) {
                         userList.add(currentUser)
                     }
                 }
