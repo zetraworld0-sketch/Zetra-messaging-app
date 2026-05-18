@@ -5,55 +5,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dev.a2ys.conversa.R
 import dev.a2ys.conversa.main.activities.ChatActivity
 import dev.a2ys.conversa.models.User
 
-class UserAdapter : ListAdapter<User, UserAdapter.UserViewHolder>(UserDiffCallback()) {
+// FIXED: Added (private val userList: List<User>) so MainActivity can pass the list cleanly
+class UserAdapter(private val userList: List<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.user_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.user_layout, parent, false)
         return UserViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
+        val currentUser = userList[position]
+        holder.textName.text = currentUser.username
 
-    inner class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val usernameTextView: TextView = itemView.findViewById(R.id.usernameTextView)
-        private val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
-
-        fun bind(user: User) {
-            nameTextView.text = user.basicInfo.name
-            usernameTextView.text = buildString {
-                append("@")
-                append(user.username)
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, ChatActivity::class.java).apply {
+                putExtra("name", currentUser.username)
+                putExtra("uid", currentUser.userId)
             }
-
-            // Set click listener to open ChatActivity when this user item is tapped
-            itemView.setOnClickListener {
-                val context = itemView.context
-                val intent = Intent(context, ChatActivity::class.java).apply {
-                    putExtra("receiver_uid", user.userId)
-                    putExtra("receiver_name", user.basicInfo.name)
-                }
-                context.startActivity(intent)
-            }
+            context.startActivity(intent)
         }
     }
 
-    private class UserDiffCallback : DiffUtil.ItemCallback<User>() {
-        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
-            return oldItem.userId == newItem.userId
-        }
+    override fun getItemCount(): Int {
+        return userList.size
+    }
 
-        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
-            return oldItem == newItem
-        }
+    class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textName: TextView = itemView.findViewById(R.id.txt_name)
     }
 }
