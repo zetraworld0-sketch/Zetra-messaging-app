@@ -45,6 +45,14 @@
             android:name="dev.a2ys.conversa.main.activities.ChatActivity"
             android:exported="false" />
 
+        <activity
+            android:name="dev.a2ys.conversa.main.activities.RegisterActivity"
+            android:exported="false" />
+        
+        <activity
+            android:name="dev.a2ys.conversa.main.activities.NameEntryActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
