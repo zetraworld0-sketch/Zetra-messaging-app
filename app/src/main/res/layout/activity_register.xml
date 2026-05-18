@@ -22,7 +22,7 @@
         android:id="@+id/subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Zetra Engine will automatically verify your telephone network identifier."
+        android:text="Netscape protocol, powered by the Zetra engine, will automatically validate your telephone network identifier."
         android:textColor="#8A99AD"
         android:textSize="14sp"
         android:layout_marginTop="8dp"
