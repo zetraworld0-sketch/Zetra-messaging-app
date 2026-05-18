@@ -11,8 +11,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import dev.a2ys.conversa.authentication.activities.InfoActivity
-import dev.a2ys.conversa.authentication.activities.UserAuthenticationActivity
 import dev.a2ys.conversa.main.activities.MainActivity
+import dev.a2ys.conversa.main.activities.RegisterActivity // Import your new activity
 
 class LandingPageActivity : AppCompatActivity() {
 
@@ -28,42 +28,13 @@ class LandingPageActivity : AppCompatActivity() {
         auth = Firebase.auth
         database = FirebaseDatabase.getInstance().reference
 
-        checkUserAuthentication()
-    }
+        // We REMOVED checkUserAuthentication() from here.
+        // Now the app will show your landing page layout (with the buttons)
+        // instead of jumping to the email screen immediately.
 
-    private fun checkUserAuthentication() {
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            navigateUser(currentUser.uid)
-        } else {
-            navigateToAuthenticationActivity()
+        // Set up the button click listener
+        binding.btnAccessViaPhone.setOnClickListener { // Make sure this ID matches your XML
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
-    }
-
-    private fun navigateUser(uid: String) {
-        database.child("registeredUsers").child(uid).get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                if (task.result.exists()) {
-                    startActivity(Intent(applicationContext, MainActivity::class.java))
-                    finish()
-                } else {
-                    startActivity(Intent(applicationContext, InfoActivity::class.java))
-                    finish()
-                }
-            } else {
-                showErrorSnackbar()
-            }
-        }
-    }
-
-    private fun navigateToAuthenticationActivity() {
-        startActivity(Intent(applicationContext, UserAuthenticationActivity::class.java))
-        finish()
-    }
-
-    private fun showErrorSnackbar() {
-        Snackbar.make(binding.root, "Please contact the developer!", Snackbar.LENGTH_SHORT)
-            .setAction("Got it") {}
-            .show()
     }
 }
