@@ -35,7 +35,7 @@ class RegisterActivity : AppCompatActivity() {
             val name = nameInput.text.toString().trim()
 
             if (phone.length < 10) {
-                Toast.makeText(this, "Enter valid phone number", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Enter a valid phone number", Toast.LENGTH_SHORT).show()
             } else if (name.isEmpty()) {
                 Toast.makeText(this, "Enter your name", Toast.LENGTH_SHORT).show()
             } else {
@@ -45,24 +45,30 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun saveUserData(phone: String, name: String) {
-        // Get the logged-in user's unique ID from Firebase
         val uid = auth.currentUser?.uid
 
         if (uid != null) {
-            // Create a structured data map to match your database architecture
-            val userMap = hashMapOf(
-                "uid" to uid,
-                "phone" to phone,
-                "username" to name
+            // Build the nested BasicInfo object to match your User.kt model structure
+            val basicInfoMap = hashMapOf(
+                "name" to name,
+                "dateOfBirth" to "",
+                "gender" to ""
             )
 
-            // Save under the "registeredUsers" node just like your LandingPageActivity checks
+            // Map everything to match your User structure precisely
+            val userMap = hashMapOf(
+                "userId" to uid,
+                "username" to name,
+                "basicInfo" to basicInfoMap
+            )
+
+            // Save under registeredUsers
             database.child("registeredUsers").child(uid).setValue(userMap)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(this, "Profile Saved Successfully", Toast.LENGTH_SHORT).show()
                         
-                        // Direct the user straight into the main dashboard app interface
+                        // Direct the user into the main dashboard interface
                         val intent = Intent(this, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
