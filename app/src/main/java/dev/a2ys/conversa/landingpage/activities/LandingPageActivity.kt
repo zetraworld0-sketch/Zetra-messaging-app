@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import dev.a2ys.conversa.databinding.ActivityLandingPageBinding
-import dev.a2ys.conversa.main.activities.RegisterActivity
 
 class LandingPageActivity : AppCompatActivity() {
 
@@ -15,9 +14,10 @@ class LandingPageActivity : AppCompatActivity() {
         binding = ActivityLandingPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // The button ID from your XML is 'access_via_id_bridge'
         binding.accessViaIdBridge.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
+            // Explicitly targeting the full class path to bypass Manifest package resolution blocks
+            val intent = Intent()
+            intent.setClassName(this, "dev.a2ys.conversa.main.activities.RegisterActivity")
             startActivity(intent)
         }
     }
