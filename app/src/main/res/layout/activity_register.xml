@@ -34,7 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         app:hintTextColor="#00A2FF"
-        app:layout_constraintTop_toBottomOf="@id/subtitle">
+        app:layout_constraintTop_toBottomOf="@id/subtitle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phoneInput"
@@ -43,7 +44,7 @@
             android:hint="Phone Number"
             android:inputType="phone"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#2D3E50"/>
+            android:textColorHint="#5C6F84"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
