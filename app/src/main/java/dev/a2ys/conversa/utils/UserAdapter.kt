@@ -1,5 +1,6 @@
 package dev.a2ys.conversa.utils
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dev.a2ys.conversa.R
+import dev.a2ys.conversa.main.activities.ChatActivity
 import dev.a2ys.conversa.models.User
 
 class UserAdapter : ListAdapter<User, UserAdapter.UserViewHolder>(UserDiffCallback()) {
@@ -31,6 +33,16 @@ class UserAdapter : ListAdapter<User, UserAdapter.UserViewHolder>(UserDiffCallba
             usernameTextView.text = buildString {
                 append("@")
                 append(user.username)
+            }
+
+            // Set click listener to open ChatActivity when this user item is tapped
+            itemView.setOnClickListener {
+                val context = itemView.context
+                val intent = Intent(context, ChatActivity::class.java).apply {
+                    putExtra("receiver_uid", user.userId)
+                    putExtra("receiver_name", user.basicInfo.name)
+                }
+                context.startActivity(intent)
             }
         }
     }
