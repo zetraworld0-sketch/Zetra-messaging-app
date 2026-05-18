@@ -32,8 +32,9 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(resources.getIdentifier("activity_chat", "layout", packageName))
 
-        val name = intent.getStringExtra("receiverName")
-        val receiverUid = intent.getStringExtra("receiverUid")
+        // FIXED: Matched keys exactly with UserAdapter intents ("receiver_name" and "receiver_uid")
+        val name = intent.getStringExtra("receiver_name")
+        val receiverUid = intent.getStringExtra("receiver_uid")
         val senderUid = FirebaseAuth.getInstance().currentUser?.uid
 
         mDbRef = FirebaseDatabase.getInstance().reference
@@ -71,38 +72,40 @@ class ChatActivity : AppCompatActivity() {
         }
 
         // Real-time Cloud Stream Sync Engine
-        mDbRef.child("chats").child(senderRoom!!).child("messages")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    messageList.clear()
-                    for (postSnapshot in snapshot.children) {
-                        val message = postSnapshot.getValue(Chat::class.java)
-                        if (message != null) {
-                            messageList.add(message)
-                            
-                            // Silently write cloud payload to local disk for offline persistence
-                            if (senderUid != null && receiverUid != null) {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    db.messageDao().insertMessage(
-                                        LocalMessage(
-                                            senderUid = message.sender ?: "",
-                                            receiverUid = if (message.sender == senderUid) receiverUid else senderUid,
-                                            messageText = message.message ?: "",
-                                            timestamp = System.currentTimeMillis()
+        if (senderRoom != null) {
+            mDbRef.child("chats").child(senderRoom!!).child("messages")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        messageList.clear()
+                        for (postSnapshot in snapshot.children) {
+                            val message = postSnapshot.getValue(Chat::class.java)
+                            if (message != null) {
+                                messageList.add(message)
+                                
+                                // Silently write cloud payload to local disk for offline persistence
+                                if (senderUid != null && receiverUid != null) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        db.messageDao().insertMessage(
+                                            LocalMessage(
+                                                senderUid = message.sender ?: "",
+                                                receiverUid = if (message.sender == senderUid) receiverUid else senderUid,
+                                                messageText = message.message ?: "",
+                                                timestamp = System.currentTimeMillis()
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
+                        messageAdapter.notifyDataSetChanged()
+                        chatRecyclerView.scrollToPosition(messageList.size - 1)
                     }
-                    messageAdapter.notifyDataSetChanged()
-                    chatRecyclerView.scrollToPosition(messageList.size - 1)
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                    // Operational boundary
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                        // Operational boundary
+                    }
+                })
+        }
 
         // Secure Data Push Transmission Flow
         sendButton.setOnClickListener {
@@ -123,11 +126,13 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 // 2. Transmit payload directly to the network cloud graph
-                mDbRef.child("chats").child(senderRoom!!).child("messages").push()
-                    .setValue(messageObject).addOnSuccessListener {
-                        mDbRef.child("chats").child(receiverRoom!!).child("messages").push()
-                            .setValue(messageObject)
-                    }
+                if (senderRoom != null && receiverRoom != null) {
+                    mDbRef.child("chats").child(senderRoom!!).child("messages").push()
+                        .setValue(messageObject).addOnSuccessListener {
+                            mDbRef.child("chats").child(receiverRoom!!).child("messages").push()
+                                .setValue(messageObject)
+                        }
+                }
                 messageBox.setText("")
             }
         }
