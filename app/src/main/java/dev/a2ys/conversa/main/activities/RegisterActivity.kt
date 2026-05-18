@@ -20,19 +20,20 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        setContentView(resources.getIdentifier("activity_register", "layout", packageName))
 
         // Initialize Firebase instances
         auth = Firebase.auth
         database = FirebaseDatabase.getInstance().reference
 
-        val phoneInput = findViewById<EditText>(R.id.phoneInput)
-        val nameInput = findViewById<EditText>(R.id.nameInput)
-        val btnFinish = findViewById<Button>(R.id.btnNext)
+        // Dynamic resource matching matching your core activity design pattern
+        val phoneInput = findViewById<EditText>(resources.getIdentifier("phoneInput", "id", packageName))
+        val nameInput = findViewById<EditText>(resources.getIdentifier("nameInput", "id", packageName))
+        val btnFinish = findViewById<Button>(resources.getIdentifier("btnNext", "id", packageName))
 
-        btnFinish.setOnClickListener {
-            val phone = phoneInput.text.toString().trim()
-            val name = nameInput.text.toString().trim()
+        btnFinish?.setOnClickListener {
+            val phone = phoneInput?.text.toString().trim()
+            val name = nameInput?.text.toString().trim()
 
             if (phone.length < 10) {
                 Toast.makeText(this, "Enter a valid phone number", Toast.LENGTH_SHORT).show()
@@ -41,6 +42,9 @@ class RegisterActivity : AppCompatActivity() {
             } else {
                 saveUserData(phone, name)
             }
+        } ?: run {
+            // Safe fallback if the button component identifier fails execution rules
+            Toast.makeText(this, "Interface initialization error", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -48,27 +52,23 @@ class RegisterActivity : AppCompatActivity() {
         val uid = auth.currentUser?.uid
 
         if (uid != null) {
-            // Build the nested BasicInfo object to match your User.kt model structure
             val basicInfoMap = hashMapOf(
                 "name" to name,
                 "dateOfBirth" to "",
                 "gender" to ""
             )
 
-            // Map everything to match your User structure precisely
             val userMap = hashMapOf(
                 "userId" to uid,
                 "username" to name,
                 "basicInfo" to basicInfoMap
             )
 
-            // Save under registeredUsers
             database.child("registeredUsers").child(uid).setValue(userMap)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(this, "Profile Saved Successfully", Toast.LENGTH_SHORT).show()
                         
-                        // Direct the user into the main dashboard interface
                         val intent = Intent(this, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
