@@ -30,15 +30,15 @@ class MainActivity : AppCompatActivity() {
         userRecyclerView.layoutManager = LinearLayoutManager(this)
         userRecyclerView.adapter = adapter
 
-        // Changed path from "user" to "registeredUsers" to match your registration save location
+        // Pulling data from the structured "registeredUsers" node
         mDbRef.child("registeredUsers").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 userList.clear()
                 for (postSnapshot in snapshot.children) {
                     val currentUser = postSnapshot.getValue(User::class.java)
                     
-                    // Make sure the User model uses 'uid' or 'userId' correctly matching your DB keys
-                    if (currentUser != null && mAuth.currentUser?.uid != currentUser.uid) {
+                    // Filter out the current logged-in user from appearing in their own contact list
+                    if (currentUser != null && mAuth.currentUser?.uid != currentUser.userId) {
                         userList.add(currentUser)
                     }
                 }
