@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.a2ys.conversa.models.User
+import dev.a2ys.conversa.utils.UserAdapter // Ensure this import matches the file position
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -24,7 +25,9 @@ class MainActivity : AppCompatActivity() {
         mDbRef = FirebaseDatabase.getInstance().reference
 
         userList = ArrayList()
-        adapter = UserAdapter(this, userList)
+        
+        // FIXED: Removed 'this' context argument to perfectly match your updated UserAdapter signature
+        adapter = UserAdapter(userList)
 
         userRecyclerView = findViewById(resources.getIdentifier("userRecyclerView", "id", packageName))
         userRecyclerView.layoutManager = LinearLayoutManager(this)
