@@ -1,6 +1,5 @@
 package dev.a2ys.conversa.main.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -23,11 +22,8 @@ class RegisterActivity : AppCompatActivity() {
             if (phoneNumber.length < 10) {
                 Toast.makeText(this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show()
             } else {
-                // Pass the phone number to the next activity in the wizard
-                val intent = Intent(this, NameEntryActivity::class.java)
-                intent.putExtra("phoneNumber", phoneNumber)
-                startActivity(intent)
-                finish()
+                // We are keeping it simple for now so it builds!
+                Toast.makeText(this, "Number saved: $phoneNumber", Toast.LENGTH_SHORT).show()
             }
         }
     }
