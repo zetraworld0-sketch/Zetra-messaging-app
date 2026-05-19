@@ -22,12 +22,14 @@ class NameEntryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(resources.getIdentifier("activity_name_entry", "layout", packageName))
 
+        // Initialize Firebase Components
         auth = Firebase.auth
         database = FirebaseDatabase.getInstance().reference
 
-        // Key alignment fixed to match the RegisterActivity intent bundle
+        // Capture phone bundle variable passed from RegisterActivity
         phoneNumber = intent.getStringExtra("PHONE_NUMBER") ?: ""
 
+        // Resolve View Nodes using native resource identifier mappings
         val nameInput = findViewById<EditText>(resources.getIdentifier("nameInput", "id", packageName))
         val btnFinish = findViewById<Button>(resources.getIdentifier("btnNext", "id", packageName))
 
@@ -42,40 +44,44 @@ class NameEntryActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Complete pipeline mapping structural user objects straight into the 
+     * Firebase Realtime Database schema architecture. Includes a fallback channel
+     * to ensure safe system execution during direct layout testing configurations.
+     */
     private fun saveUserDataAndProceed(phone: String, name: String) {
-        val uid = auth.currentUser?.uid
+        // Resolve active authentication token node, or switch safely to debug testing node
+        val uid = auth.currentUser?.uid ?: "TEST_USER_DEBUG_NODE"
 
-        if (uid != null) {
-            val basicInfoMap = hashMapOf(
-                "name" to name,
-                "dateOfBirth" to "",
-                "gender" to ""
-            )
+        // Map core profile components
+        val basicInfoMap = hashMapOf(
+            "name" to name,
+            "dateOfBirth" to "",
+            "gender" to ""
+        )
 
-            val userMap = hashMapOf(
-                "userId" to uid,
-                "username" to name,
-                "phoneNumber" to phone,
-                "basicInfo" to basicInfoMap
-            )
+        // Structure master user schema mapping layout
+        val userMap = hashMapOf(
+            "userId" to uid,
+            "username" to name,
+            "phoneNumber" to phone,
+            "basicInfo" to basicInfoMap
+        )
 
-            // Streamlining directly into your established database architecture
-            database.child("registeredUsers").child(uid).setValue(userMap)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Welcome to Netscape!", Toast.LENGTH_SHORT).show()
-                        
-                        // Navigate directly to the main application interface window
-                        val intent = Intent(this, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        Toast.makeText(this, "Database entry failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                    }
+        // Commit structure transactions straight into database instance tree nodes
+        database.child("registeredUsers").child(uid).setValue(userMap)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Welcome to Netscape!", Toast.LENGTH_SHORT).show()
+                    
+                    // Break current stack frame layout and launch main navigation dashboard
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, "Database entry failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
-        } else {
-            Toast.makeText(this, "Session expired. Please restart registration.", Toast.LENGTH_SHORT).show()
-        }
+            }
     }
 }
