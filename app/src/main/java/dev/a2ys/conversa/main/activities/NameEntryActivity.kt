@@ -29,9 +29,19 @@ class NameEntryActivity : AppCompatActivity() {
         // Capture phone bundle variable passed from RegisterActivity
         phoneNumber = intent.getStringExtra("PHONE_NUMBER") ?: ""
 
-        // Resolve View Nodes using native resource identifier mappings
+        // Resolve Input Fields using native resource identifier mappings
         val nameInput = findViewById<EditText>(resources.getIdentifier("nameInput", "id", packageName))
-        val btnFinish = findViewById<Button>(resources.getIdentifier("btnNext", "id", packageName))
+        
+        // Multi-ID Binding Matrix to catch button layout shifts safely
+        var btnFinish = findViewById<Button>(resources.getIdentifier("btnNext", "id", packageName))
+        if (btnFinish == null) {
+            btnFinish = findViewById<Button>(resources.getIdentifier("btnFinish", "id", packageName))
+        }
+
+        // Active Fail-Safe Logging System
+        if (btnFinish == null) {
+            Toast.makeText(this, "Dev Error: Button resource reference missing in layout!", Toast.LENGTH_LONG).show()
+        }
 
         btnFinish?.setOnClickListener {
             val name = nameInput?.text.toString().trim()
@@ -45,9 +55,8 @@ class NameEntryActivity : AppCompatActivity() {
     }
 
     /**
-     * Complete pipeline mapping structural user objects straight into the 
-     * Firebase Realtime Database schema architecture. Includes a fallback channel
-     * to ensure safe system execution during direct layout testing configurations.
+     * Institutional-grade transaction pipeline mapping structural data models 
+     * straight into the Firebase Realtime Database node layout arrays.
      */
     private fun saveUserDataAndProceed(phone: String, name: String) {
         // Resolve active authentication token node, or switch safely to debug testing node
