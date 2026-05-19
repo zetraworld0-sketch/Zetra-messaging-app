@@ -11,85 +11,67 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import dev.a2ys.conversa.R
 
 class NameEntryActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
-    private var phoneNumber = ""
+    private var phoneNumber: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(resources.getIdentifier("activity_name_entry", "layout", packageName))
+        setContentView(R.layout.activity_name_entry)
 
-        // Initialize Firebase Components
+        // Initialize Firebase
         auth = Firebase.auth
         database = FirebaseDatabase.getInstance().reference
 
-        // Capture phone bundle variable passed from RegisterActivity
+        // Capture phone number from previous activity
         phoneNumber = intent.getStringExtra("PHONE_NUMBER") ?: ""
 
-        // Resolve Input Fields using native resource identifier mappings
-        val nameInput = findViewById<EditText>(resources.getIdentifier("nameInput", "id", packageName))
-        
-        // Multi-ID Binding Matrix to catch button layout shifts safely
-        var btnFinish = findViewById<Button>(resources.getIdentifier("btnNext", "id", packageName))
-        if (btnFinish == null) {
-            btnFinish = findViewById<Button>(resources.getIdentifier("btnFinish", "id", packageName))
-        }
+        // Find views directly by ID
+        val nameInput = findViewById<EditText>(R.id.nameInput)
+        val btnNext = findViewById<Button>(R.id.btnNext)
 
-        // Active Fail-Safe Logging System
-        if (btnFinish == null) {
-            Toast.makeText(this, "Dev Error: Button resource reference missing in layout!", Toast.LENGTH_LONG).show()
-        }
-
-        btnFinish?.setOnClickListener {
-            val name = nameInput?.text.toString().trim()
+        // Set click listener
+        btnNext.setOnClickListener {
+            val name = nameInput.text.toString().trim()
 
             if (name.isEmpty()) {
-                Toast.makeText(this, "Please enter your name to continue", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show()
             } else {
-                saveUserDataAndProceed(phoneNumber, name)
+                saveUserDataAndProceed(name)
             }
         }
     }
 
-    /**
-     * Institutional-grade transaction pipeline mapping structural data models 
-     * straight into the Firebase Realtime Database node layout arrays.
-     */
-    private fun saveUserDataAndProceed(phone: String, name: String) {
-        // Resolve active authentication token node, or switch safely to debug testing node
+    private fun saveUserDataAndProceed(name: String) {
         val uid = auth.currentUser?.uid ?: "TEST_USER_DEBUG_NODE"
 
-        // Map core profile components
-        val basicInfoMap = hashMapOf(
-            "name" to name,
-            "dateOfBirth" to "",
-            "gender" to ""
-        )
-
-        // Structure master user schema mapping layout
         val userMap = hashMapOf(
             "userId" to uid,
             "username" to name,
-            "phoneNumber" to phone,
-            "basicInfo" to basicInfoMap
+            "phoneNumber" to phoneNumber,
+            "basicInfo" to hashMapOf(
+                "name" to name,
+                "dateOfBirth" to "",
+                "gender" to ""
+            )
         )
 
-        // Commit structure transactions straight into database instance tree nodes
         database.child("registeredUsers").child(uid).setValue(userMap)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Welcome to Netscape!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Profile Saved!", Toast.LENGTH_SHORT).show()
                     
-                    // Break current stack frame layout and launch main navigation dashboard
+                    // Proceed to Main Dashboard
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     finish()
                 } else {
-                    Toast.makeText(this, "Database entry failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
             }
     }
