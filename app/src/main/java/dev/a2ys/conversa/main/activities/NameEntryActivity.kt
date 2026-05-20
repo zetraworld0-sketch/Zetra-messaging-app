@@ -2,6 +2,7 @@ package dev.a2ys.conversa.main.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -14,47 +15,42 @@ class NameEntryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_name_entry)
+        try {
+            setContentView(R.layout.activity_name_entry)
+            val nameInput = findViewById<EditText>(R.id.nameInput)
+            val btnNext = findViewById<Button>(R.id.btnNext)
 
-        val nameInput = findViewById<EditText>(R.id.nameInput)
-        val btnNext = findViewById<Button>(R.id.btnNext)
-
-        // Safety Check: If the button is null, the XML ID is wrong
-        if (btnNext == null) {
-            Toast.makeText(this, "ERROR: btnNext ID not found in XML!", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        btnNext.setOnClickListener {
-            val name = nameInput.text.toString().trim()
-            if (name.isEmpty()) {
-                Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show()
-            } else {
-                saveData(name)
+            btnNext.setOnClickListener {
+                val name = nameInput.text.toString().trim()
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Name is empty", Toast.LENGTH_SHORT).show()
+                } else {
+                    saveData(name)
+                }
             }
+        } catch (e: Exception) {
+            Toast.makeText(this, "CRASH: ${e.message}", Toast.LENGTH_LONG).show()
+            Log.e("DEBUG_ERROR", "Setup failed", e)
         }
     }
 
     private fun saveData(name: String) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "DEBUG_TEST_ID"
-        val database = FirebaseDatabase.getInstance().reference
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid == null) {
+            Toast.makeText(this, "Error: No User ID", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        val userMap = mapOf(
-            "username" to name,
-            "status" to "Active"
-        )
-
-        database.child("registeredUsers").child(uid).setValue(userMap)
+        FirebaseDatabase.getInstance().reference.child("registeredUsers").child(uid).child("username")
+            .setValue(name)
             .addOnSuccessListener {
-                Toast.makeText(this, "Success! Entering...", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                // Clear the stack so user can't go back to this entry screen
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
+                Toast.makeText(this, "Saved! Starting Main...", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java))
                 finish()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "DB Error: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "DB ERROR: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("DEBUG_ERROR", "DB Failed", e)
             }
     }
 }
